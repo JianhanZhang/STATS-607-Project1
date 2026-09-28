@@ -10,7 +10,7 @@ random.seed(1)
 # We split the data temporally. In other words, we first find the 100000 most recent ratings. 
 # We then reserve the newest 20000 of the 100000 ratings as the test set, while the remaining 80000 is 
 # used as the training set.
-full = pd.read_csv('../data/data.csv').drop(columns=['Unnamed: 0'])[-100000:]
+full = pd.read_csv('data/data.csv').drop(columns=['Unnamed: 0'])[-100000:]
 train = full[:80000]
 test = full[-20000:]
 

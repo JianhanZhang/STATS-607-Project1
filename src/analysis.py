@@ -145,7 +145,7 @@ def best_rmse_all(
         'Model': ['BRISMF', 'Iterative SVD', 'SVD++'],
         'RMSE': [rmse_brismf, rmse_iterative_svd, rmse_svdpp]
     })
-    rmse_results.to_csv('../results/rmse_results.csv', index=False)
+    rmse_results.to_csv('results/rmse_results.csv', index=False)
 
 
 def plot_brismf_details(
@@ -225,7 +225,7 @@ def plot_brismf_details(
     fig.suptitle('Analysis of Test RMSE for BRISMF', fontsize=16, y=1.02)
 
     # Save the figure as a PNG file
-    plt.savefig('../results/brismf_rmse_analysis_plot.png', bbox_inches='tight')
+    plt.savefig('results/brismf_rmse_analysis_plot.png', bbox_inches='tight')
 
 
 def plot_svdpp_details(
@@ -310,4 +310,4 @@ def plot_svdpp_details(
     fig.suptitle('Analysis of Test RMSE for SVD++', fontsize=16, y=1.02)
 
     # Save the figure as a PNG file
-    plt.savefig('../results/svdpp_rmse_analysis_plot.png', bbox_inches='tight')
+    plt.savefig('results/svdpp_rmse_analysis_plot.png', bbox_inches='tight')
