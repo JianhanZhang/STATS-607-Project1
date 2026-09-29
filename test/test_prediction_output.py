@@ -5,6 +5,7 @@ from src.models.iterative_svd import IterativeSVD
 
 
 def test_brismf_prediction_output():
+    '''Test the size and data type of the prediction output of the BRISMF model.'''
     # Load a small portion of the dataset for testing
     full = pd.read_csv('data/data.csv').drop(columns=['Unnamed: 0'])[-1000:]
     train = full[:800]
@@ -29,6 +30,7 @@ def test_brismf_prediction_output():
 
 
 def test_iterative_svd_prediction_output():
+    '''Test the size and data type of the prediction output of the IterativeSVD model.'''
     # Load a small portion of the dataset for testing
     full = pd.read_csv('data/data.csv').drop(columns=['Unnamed: 0'])[-1000:]
     train = full[:800]

@@ -1,10 +1,22 @@
+"""Implement the iterative SVD algorithm for collaborative filtering."""
+
 import numpy as np
 import pandas as pd
 from scipy.sparse import lil_matrix, csr_matrix
 from scipy.sparse.linalg import svds
 
 class IterativeSVD:
+    """Implement the iterative SVD algorithm for collaborative filtering."""
     def __init__(self, k=10, num_epochs=10):
+        """Initialize the iterative SVD model.
+
+        Parameters
+        ----------
+        k : int, default=10
+            Number of singular values and latent dimensions to retain.
+        num_epochs : int, default=10
+            Number of epochs for iterative reconstruction.
+        """
         # Initialize instance variables
         self.k = k
         self.num_epochs = num_epochs
@@ -16,6 +28,15 @@ class IterativeSVD:
         self.movie_means = []
 
     def fit(self, X, y):
+        """Fit the iterative SVD model to observed ratings.
+
+        Parameters
+        ----------
+        X : pandas.DataFrame
+            Training dataset containing ``user_id`` and ``movie_id`` columns.
+        y : array-like
+            Observed ratings corresponding to the rows of ``X``.
+        """
         # Map user_id and movie_id to indices
         users = X['user_id'].unique()
         movies = X['movie_id'].unique()
@@ -60,6 +81,22 @@ class IterativeSVD:
 
 
     def predict(self, X):
+        """Predict ratings for user-movie pairs.
+
+        Please note that pairs containing an unseen user or movie receive
+        the global mean rating.
+
+        Parameters
+        ----------
+        X : pandas.DataFrame
+            Data containing ``user_id`` and ``movie_id`` columns for which
+            predictions need to be made
+
+        Returns
+        -------
+        numpy.ndarray
+            Predicted ratings containing one prediction for each row of ``X``.
+        """
         # Get the corresponding index for each user id and each movie_id
         user_indices = np.array([self.user_map.get(u, -1) for u in X['user_id']])
         item_indices = np.array([self.movie_map.get(i, -1) for i in X['movie_id']])
@@ -79,7 +116,3 @@ class IterativeSVD:
             )
 
         return predictions
-
-
-    '''def get_full_predictions(self):
-        return self.R.toarray() + self.global_mean'''

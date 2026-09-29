@@ -1,3 +1,5 @@
+'''Load the data and run the analysis to compare the performance of BRISMF, iterative SVD, and SVD++.'''
+
 import numpy as np
 import pandas as pd
 import random

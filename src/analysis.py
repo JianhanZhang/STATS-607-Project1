@@ -1,3 +1,5 @@
+'''Implement functions for analyzing the performance of BRISMF, iterative SVD, and SVD++ for collaborative filtering.'''
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -20,6 +22,36 @@ def best_rmse_brismf(
         p_p_list=[0.001, 0.01], 
         p_q_list=[0.001, 0.01]
 ):
+    """Select and evaluate the best BRISMF model.
+
+    First select the best parameters for BRISMF using grid search on the validation set, and then evaluate and  
+    return the RMSE of the selected model on the test set.
+
+    Parameters
+    ----------
+    train_data : pandas.DataFrame
+        Full training dataset.
+    non_validation_data : pandas.DataFrame
+        Subset of the training data used to train models during hyperparameter selection.
+    validation_data : pandas.DataFrame
+        Validation data used to compute the RMSE during hyperparameter selection.
+    test_data : pandas.DataFrame
+        Test data used for final RMSE evaluation of the selected model.
+    K_list : list of int, default=[10, 100, 1000]
+        Candidate latent factor dimensions.
+    lr_p_list : list of float, default=[0.00003, 0.0003]
+        Candidate learning rates for user latent factors.
+    lr_q_list : list of float, default=[0.00003, 0.0003]
+        Candidate learning rates for movie latent factors.
+    p_p_list : list of float, default=[0.001, 0.01]
+        Candidate regularization penalties for user latent factors.
+    p_q_list : list of float, default=[0.001, 0.01]
+        Candidate regularization penalties for movie latent factors.
+
+    Returns
+    -------
+    float
+        Test RMSE of the selected BRISMF model."""
     
     # Find the best hyperparameters for BRISMF using grid search
     best_rmse = float('inf')
@@ -51,6 +83,29 @@ def best_rmse_iterative_svd(
         test_data, 
         K_list=[10, 20, 100], 
 ):
+    """Select and evaluate the best IterativeSVD model.
+
+    First select the best parameters for IterativeSVD using grid search on the validation set, and then evaluate and  
+    return the RMSE of the selected model on the test set.
+
+    Parameters
+    ----------
+    train_data : pandas.DataFrame
+        Full training dataset.
+    non_validation_data : pandas.DataFrame
+        Subset of the training data used to train models during hyperparameter selection.
+    validation_data : pandas.DataFrame
+        Validation data used to compute the RMSE during hyperparameter selection.
+    test_data : pandas.DataFrame
+        Test data used for final RMSE evaluation of the selected model.
+    K_list : list of int, default=[10, 20, 100]
+        Candidate latent factor dimensions.
+
+    Returns
+    -------
+    float
+        Test RMSE of the selected IterativeSVD model.
+    """
     
     # Find the best hyperparameters for iterative SVD using grid search
     best_rmse = np.inf
@@ -81,6 +136,34 @@ def best_rmse_svdpp(
         lr_all_list = [0.002, 0.02], 
         reg_all_list = [0.02, 0.2]
 ):
+    """Select and evaluate the best SVD++ model.
+
+    First select the best parameters for SVD++ using grid search on the validation set, and then evaluate and  
+    return the RMSE of the selected model on the test set.
+
+    Parameters
+    ----------
+    train_data : pandas.DataFrame
+        Full training dataset.
+    non_validation_data : pandas.DataFrame
+        Subset of the training data used to train models during hyperparameter selection.
+    validation_data : pandas.DataFrame
+        Validation data used to compute the RMSE during hyperparameter selection.
+    test_data : pandas.DataFrame
+        Test data used for final RMSE evaluation of the selected model.
+    n_factors_list : list of int, default=[10, 20, 100]
+        Candidate numbers of latent factors.
+    n_epochs_list : list of int, default=[10, 20, 100]
+        Candidate numbers of training epochs.
+    lr_all_list : list of float, default=[0.002, 0.02]
+        Candidate learning rates.
+    reg_all_list : list of float, default=[0.02, 0.2]
+        Candidate regularization penalties.
+
+    Returns
+    -------
+    float
+        Test RMSE of the selected SVD++ model."""
 
     # Load data into required format for the surprise library
     ratings_reader = reader.Reader(rating_scale=(1,5))
@@ -131,9 +214,46 @@ def best_rmse_all(
         K_list_iterative_svd=[10, 20, 100], 
         n_factors_list_svdpp = [10, 20, 100], 
         n_epochs_list_svdpp = [10, 20, 100], 
-        lr_all_list_svdpp = [0.002, 0.02], 
-        reg_all_list_svdpp = [0.02, 0.2]
+        lr_all_list_svdpp=[0.002, 0.02], 
+        reg_all_list_svdpp=[0.02, 0.2]
 ):
+    """Evaluate all recommendation models and save their RMSE values.
+
+    For each of BRISMF, Iterative SVD, and SVD++, first select the best parameters for SVD++ using grid search 
+    on the validation set, and then evaluate the RMSE of the selected model on the test set. The resulting RMSE 
+    values are saved to ``results/rmse_results.csv``.
+
+    Parameters
+    ----------
+    train_data : pandas.DataFrame
+        Full training dataset.
+    non_validation_data : pandas.DataFrame
+        Portion of the training data used to fit candidate models.
+    validation_data : pandas.DataFrame
+        Validation data used for hyperparameter selection.
+    test_data : pandas.DataFrame
+        Test data used for final evaluation.
+    K_list_brismf : list of int, default=[10, 100, 1000]
+        Candidate latent dimensions for BRISMF.
+    lr_p_list_brismf : list of float, default=[0.00003, 0.0003]
+        Candidate user factor learning rates for BRISMF.
+    lr_q_list_brismf : list of float, default=[0.00003, 0.0003]
+        Candidate movie factor learning rates for BRISMF.
+    p_p_list_brismf : list of float, default=[0.001, 0.01]
+        Candidate user factor penalties for BRISMF.
+    p_q_list_brismf : list of float, default=[0.001, 0.01]
+        Candidate movie factor penalties for BRISMF.
+    K_list_iterative_svd : list of int, default=[10, 20, 100]
+        Candidate latent dimensions for IterativeSVD.
+    n_factors_list_svdpp : list of int, default=[10, 20, 100]
+        Candidate numbers of latent factors for SVD++.
+    n_epochs_list_svdpp : list of int, default=[10, 20, 100]
+        Candidate numbers of training epochs for SVD++.
+    lr_all_list_svdpp : list of float, default=[0.002, 0.02]
+        Candidate learning rates for SVD++.
+    reg_all_list_svdpp : list of float, default=[0.02, 0.2]
+        Candidate regularization penalties for SVD++.
+    """
     
     # Compute the best RMSE for each model
     rmse_brismf = best_rmse_brismf(train_data, non_validation_data, validation_data, test_data, K_list_brismf, lr_p_list_brismf, lr_q_list_brismf, p_p_list_brismf, p_q_list_brismf)
@@ -156,6 +276,29 @@ def plot_brismf_details(
         p_pb_list = [0.001, 0.005, 0.01, 0.05, 0.1], 
         p_qb_list = [0.001, 0.005, 0.01, 0.05, 0.1]
 ):
+    """Plot BRISMF RMSE sensitivity to selected hyperparameters.
+
+    Fit BRISMF models over several values of the number of epochs, latent
+    dimension, user bias penalty, and movie bias penalty, then save the
+    resulting RMSE plots. The resulting plot is saved to 
+    ``results/brismf_rmse_analysis_plot.png``.
+
+
+    Parameters
+    ----------
+    train_data : pandas.DataFrame
+        Data used to fit each BRISMF model.
+    test_data : pandas.DataFrame
+        Data used to evaluate the RMSE of each BRISMF model.
+    epochs_list : list of int, default=[10, 20, 50, 100]
+        List of numbers of training epochs to be evaluated.
+    k_list : list of int, default=[10, 20, 50, 100, 1000]
+        List of latent dimensions to be evaluated.
+    p_pb_list : list of float, default=[0.001, 0.005, 0.01, 0.05, 0.1]
+        List of user bias regularization penalties to be evaluated.
+    p_qb_list : list of float, default=[0.001, 0.005, 0.01, 0.05, 0.1]
+        List of movie bias regularization penalties to be evaluated.
+    """
 
     # Local helper function to compute RMSE for a given list of hyperparameters of interest
     def batch_rmse(train_set, test_set, K=[10], p_p=[0.01], p_pb=[0.01], p_q=[0.01], p_qb=[0.01], epochs=[10]):
@@ -236,6 +379,29 @@ def plot_svdpp_details(
         lr_all_list=[0.007, 0.02, 0.07, 0.2], 
         reg_all_list=[0.0002, 0.007, 0.02, 0.07, 0.2]
 ):
+    """Plot SVD++ RMSE sensitivity to selected hyperparameters.
+
+    Fit SVD++ models over several values of the number of epochs, latent
+    dimension, learning rate, regularization penalty, then save the
+    resulting RMSE plots. The resulting plot is saved to 
+    ``results/svdpp_rmse_analysis_plot.png``.
+
+
+    Parameters
+    ----------
+    train_data : pandas.DataFrame
+        Data used to fit each SVD++ model.
+    test_data : pandas.DataFrame
+        Data used to evaluate the RMSE of each SVD++ model.
+    n_epochs_list : list of int, default=[10, 20, 50, 100]
+        List of numbers of training epochs to be evaluated.
+    n_factors_list : list of int, default=[10, 20, 50, 100, 1000]
+        List of numbers of latent factors to be evaluated
+    lr_all_list : list of float, default=[0.007, 0.02, 0.07, 0.2]
+        List of learning rates to evaluate.
+    reg_all_list : list of float, default=[0.0002, 0.007, 0.02, 0.07, 0.2]
+        List of regularization penalties to evaluate.
+    """
 
     # Load data into required format for the surprise library
     ratings_reader = reader.Reader(rating_scale=(1,5))

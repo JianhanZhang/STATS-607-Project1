@@ -1,11 +1,41 @@
+"""Implement the BRISMF algorithm for collaborative filtering."""
+
 import numpy as np
 import pandas as pd
 from sklearn.base import BaseEstimator
 from scipy.sparse import csr_matrix
 
 class BRISMF(BaseEstimator):
+    """Implement the BRISMF algorithm for collaborative filtering."""
     def __init__(self, K=5, lr_pb=0.0003, lr_p=0.0003, lr_qb=0.0003, lr_q=0.0003,
                  p_pb=0.01, p_p=0.01, p_qb=0.01, p_q=0.01, num_to_stop=2, epochs=10):
+        """Initialize the BRISMF model.
+
+        Parameters
+        ----------
+        K : int, default=5
+            Number of latent factors.
+        lr_pb : float, default=0.0003
+            Learning rate for user bias terms.
+        lr_p : float, default=0.0003
+            Learning rate for user latent factors.
+        lr_qb : float, default=0.0003
+            Learning rate for movie bias terms.
+        lr_q : float, default=0.0003
+            Learning rate for movie latent factors.
+        p_pb : float, default=0.01
+            Regularization penalty for user bias terms.
+        p_p : float, default=0.01
+            Regularization penalty for user latent factors.
+        p_qb : float, default=0.01
+            Regularization penalty for movie bias terms.
+        p_q : float, default=0.01
+            Regularization penalty for movie latent factors.
+        num_to_stop : int, default=2
+            Number of consecutive stopping checks required before early stopping.
+        epochs : int, default=10
+            Maximum number of training epochs.
+        """
         # Initialize instance variables
         self.N = 0
         self.M = 0
@@ -30,6 +60,20 @@ class BRISMF(BaseEstimator):
 
 
     def fit(self, X, y):
+        """Fit the BRISMF model to observed user-movie ratings.
+
+        Parameters
+        ----------
+        X : pandas.DataFrame
+            Training dataset containing ``user_id`` and ``movie_id`` columns.
+        y : array-like
+            Observed ratings corresponding to the rows in ``X``.
+
+        Returns
+        -------
+        BRISMF
+            The fitted model.
+        """
         # Map user_id and movie_id to indices
         self.global_mean = np.mean(y)
         users, user_map = np.unique(X['user_id'], return_inverse=True)
@@ -38,8 +82,8 @@ class BRISMF(BaseEstimator):
         self.movie_map = {i: j for j, i in enumerate(movies)}
         self.N = len(users)
         self.M = len(movies)
-        self.P = self.generate_P0(self.N, self.K)
-        self.Q = self.generate_Q0(self.K, self.M)
+        self.P = self._generate_P0(self.N, self.K)
+        self.Q = self._generate_Q0(self.K, self.M)
 
         # Compute mean rating for each user and each movie, respectively
         for u in users:
@@ -89,6 +133,21 @@ class BRISMF(BaseEstimator):
 
     # Returns a list
     def predict(self, X):
+        """Predict ratings for user-movie pairs.
+        
+        Please note that for unseen users or movies, available mean ratings are used as the predictions.
+
+        Parameters
+        ----------
+        X : pandas.DataFrame
+            Data containing ``user_id`` and ``movie_id`` columns for which
+            predictions need to be made.
+
+        Returns
+        -------
+        numpy.ndarray
+            Predicted ratings containing one prediction for each row of ``X``.
+        """
         output = []
 
         # Get the corresponding index for each user id and each movie_id
@@ -123,34 +182,64 @@ class BRISMF(BaseEstimator):
 
 
     def get_P(self):
+        """Return the learned user latent factor matrix (i.e., P)."""
         return self.P
 
 
     def get_Q(self):
+        """Return the learned movie latent factor matrix (i.e., Q)."""
         return self.Q
 
 
-    def generate_P0(self, N, K):
+    def _generate_P0(self, N, K):
+        """Generate the initial user latent factor matrix.
+
+        Parameters
+        ----------
+        N : int
+            Number of users.
+        K : int
+            Number of latent factors.
+
+        Returns
+        -------
+        numpy.ndarray
+            Initial latent factor matrix P0, with shape ``(N, K)``.
+        """
         output = 0.000001 * np.random.rand(N, K)
         output[:,0] = 1
         return output
 
 
-    def generate_Q0(self, K, M):
+    def _generate_Q0(self, K, M):
+        """Generate the initial movie latent factor matrix.
+
+        Parameters
+        ----------
+        K : int
+            Number of latent factors.
+        M : int
+            Number of movies.
+
+        Returns
+        -------
+        numpy.ndarray
+            Initial latent factor matrix Q0, with shape ``(K, M)``.
+        """
         output = 0.000001 * np.random.rand(K, M)
         output[1,:] = 1
         return output
 
 
-    def compute_rmse(self, ratings):
+    '''def compute_rmse(self, ratings):
         rows, cols = ratings.nonzero()
         predictions = np.sum(self.P[rows] * self.Q[:, cols].T, axis=1)
         errors = ratings.data - predictions
-        return np.sqrt(np.mean(errors ** 2))
+        return np.sqrt(np.mean(errors ** 2))'''
 
 
-    # Define get_params method to return the model's hyperparameters
     def get_params(self, deep=True):
+        """Return the hyperparameters of the model."""
         return {
             'K': self.K,
             'lr_pb': self.lr_pb,
@@ -165,8 +254,8 @@ class BRISMF(BaseEstimator):
         }
 
 
-    # Define set_params method to set hyperparameters
     def set_params(self, **params):
+        """Set the hyperparameters of the model."""
         for key, value in params.items():
             setattr(self, key, value)
         return self
