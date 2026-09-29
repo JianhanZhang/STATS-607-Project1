@@ -117,6 +117,9 @@ and regenerates the following files:
 ## References
 
 [1] Ghazanfar, Mustansar Ali, and Adam Prügel-Bennett. "The Advantage of Careful Imputation Sources in Sparse Data-Environment of Recommender Systems: Generating Improved SVD-based Recommendations." Informatica (Slovenia) 37.1 (2013): 61-92.
+
 [2] Hug, Nicolas. "Surprise: A Python library for recommender systems." Journal of Open Source Software 5.52 (2020): 2174.
+
 [3] Koren, Yehuda. "Factorization meets the neighborhood: a multifaceted collaborative filtering model." Proceedings of the 14th ACM SIGKDD international conference on Knowledge discovery and data mining. 2008.
+
 [4] Takács, Gábor, et al. "Matrix factorization and neighbor based algorithms for the netflix prize problem." Proceedings of the 2008 ACM conference on Recommender systems. 2008.
