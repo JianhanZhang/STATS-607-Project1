@@ -38,7 +38,6 @@ The project contains five major folders:
 
 ```text
 .
-├── .gitignore
 ├── Makefile
 ├── README.md
 ├── data
@@ -47,6 +46,7 @@ The project contains five major folders:
 │   ├── brismf.ipynb
 │   ├── iterative_svd.ipynb
 │   └── svdpp.ipynb
+├── reflection.pdf
 ├── requirements.txt
 ├── results
 │   ├── brismf_rmse_analysis_plot.png
